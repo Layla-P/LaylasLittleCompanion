@@ -30,6 +30,7 @@ namespace LaylasLittleCompanion.Server
 		{
 			services.Configure<TwitchConfiguration>(Configuration.GetSection("TwitchConfiguration"));
 
+			services.AddHttpClient();
 			services.AddHttpContextAccessor();
 			services.AddRazorPages();
 			services.AddServerSideBlazor();

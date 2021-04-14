@@ -36,6 +36,7 @@ namespace LaylasLittleCompanion.Server.Extensions
 				options.ClientSecret = configuration["TwitchConfiguration:ClientSecret"];
 
 				options.CallbackPath = new PathString("/signin-oidc");
+				options.SaveTokens = true;
 
 				string[] scopes = configuration.GetSection("TwitchConfiguration:Scopes").Get<string[]>();
 
