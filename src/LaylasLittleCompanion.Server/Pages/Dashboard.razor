@@ -1,8 +1,47 @@
 ﻿@page "/dashboard"
 @attribute [Authorize]
 
-<h3>Welcome logged in user</h3>
+@*@using Blazored.LocalStorage
+@using LaylasLittleCompanion.Server.Models
+
+
+@inject ILocalStorageService _localStorage*@
+
+<AuthorizeView>
+	<Authorized>
+		<h1>Hello, @context.User.Identity.Name!</h1>
+		<p>You can only see this content if you're authenticated.</p>
+	</Authorized>
+</AuthorizeView>
+
+
 
 @code {
+
+	//[Parameter]
+	//public string Code { get; set; }
+
+	//protected override async Task OnInitializedAsync()
+	//{
+	//	var user = await _localStorage.GetItemAsync<TwitchUser>("twitchuser");
+
+	//	if (string.IsNullOrEmpty(User.AccessToken))
+	//	{
+	//		//var user = await localStorage.GetItemAsync<TwitchUser>("twitchuser");
+	//		if (user != null)
+	//		{
+	//			User.AccessToken = user.AccessToken;
+	//			User.DisplayName = user.DisplayName;
+	//			User.ExpiresAt = user.ExpiresAt;
+	//			User.PictureUri = user.PictureUri;
+	//			User.RefreshToken = user.RefreshToken;
+	//			User.TwitchId = user.TwitchId;
+	//			User.AuthHash = user.AuthHash;
+
+	//			await RefreshTokens();
+
+	//		}
+	//	}
+	//}
 
 }

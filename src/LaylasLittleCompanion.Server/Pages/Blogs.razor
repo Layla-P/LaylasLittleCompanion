@@ -1,0 +1,88 @@
+﻿@page "/blog"
+@using GraphQL
+@using GraphQL.Client.Http
+@using Models
+
+@inject GraphQLHttpClient graphQlClient
+@inject NavigationManager navigation
+
+@if (blogs == null)
+{
+	<p>Loading...</p>
+}
+else
+{<div class="py-5 bg-light">
+	<section>
+		<div class="container">
+			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+
+				@foreach (Item item in blogs)
+				{
+					<div class="col">
+						<div class="card" style="width: 18rem;">
+							<img src="@item.heroImage.url" class="card-img-top" alt="...">
+							<div class="card-body">
+								<h5 class="card-title">@item.title</h5>
+								<p class="card-text">@item.shortDescription</p>
+								<button @onclick="@(e => SelectBlog(item.slug))" class="btn btn-teal"><span class="">Go to blog</span></button>
+
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+
+	</section>
+</div>
+
+
+}
+
+
+@code {
+
+
+	private Item[] blogs = null;
+
+
+
+	protected override async Task OnInitializedAsync()
+	{
+
+
+		var res = await GetResponse();
+
+		blogs = res.Data.articleCollection.items;
+
+	}
+
+	//https://graphql.contentful.com/content/v1/spaces/5gi0c2vvptsm/environments/master?access_token=Tk0jMX-Z6addZMiJpd0WR_wN57LBUv6oQOScfU2n3qA
+
+	private void SelectBlog(string slug)
+	{
+		navigation.NavigateTo($"/blog/{slug}");
+	}
+
+	private async Task<GraphQLResponse<data>> GetResponse()
+	{
+
+		var articleRequest = new GraphQLRequest
+		{
+			Query = @"{
+	articleCollection {
+		items{
+			title
+			slug
+			shortDescription
+			 heroImage{
+			   url
+			  }
+	} }}",
+			OperationName = null
+		};
+
+
+		return await graphQlClient.SendQueryAsync<data>(articleRequest);
+	}
+}

@@ -1,0 +1,96 @@
+﻿@page "/blog/{slug}"
+
+@using GraphQL
+@using GraphQL.Client.Http
+@using Models
+@using Newtonsoft.Json
+
+@inject GraphQLHttpClient graphQlClient
+@inject NavigationManager navigation
+<div class="py-5 bg-light">
+	<section>
+		<div class="container">
+			@if (item == null)
+			{
+				<p>Loading...</p>
+			}
+			else
+			{
+
+				<img src="@item.heroImage.url" class="img-fluid" alt="@item.heroImage.description" />
+				<div class="p-4 absolute bottom-0 left-0 z-20">
+					<a href="#"
+					   class="">@item.tag</a>
+					<h2 class="">
+						@item.title
+					</h2>
+					<h5>@item.author</h5>
+					<p>@item.postDate.Date</p>
+					<div class="">
+						<img src=""
+							 class="" />
+						<div>
+							@item.body
+						</div>
+					</div>
+				</div>
+
+
+
+			}
+		</div>
+	</section>
+</div>
+
+
+@code {
+
+	[Parameter]
+	public string Slug { get; set; }
+
+	private Item item = null;
+
+	protected async override Task OnInitializedAsync()
+	{
+		if (string.IsNullOrEmpty(Slug))
+		{
+			navigation.NavigateTo($"/blog");
+		}
+		else
+		{
+			var res = await GetResponse();
+
+			item = res.Data.articleCollection.items.FirstOrDefault();
+		}
+
+	}
+
+	private async Task<GraphQLResponse<data>> GetResponse()
+	{
+
+		var articleRequest = new GraphQLRequest
+		{
+			Query = $@"{{
+
+articleCollection: articleCollection(where:
+{{slug: ""{Slug}""}}) {{
+items {{
+title
+tag
+postDate
+body
+shortDescription
+heroImage{{
+url
+description
+}}
+}}
+}}
+}}",
+			OperationName = null
+		};
+
+
+		return await graphQlClient.SendQueryAsync<data>(articleRequest);
+	}
+}

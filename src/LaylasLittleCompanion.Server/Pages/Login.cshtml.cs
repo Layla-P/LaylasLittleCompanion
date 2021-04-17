@@ -11,6 +11,6 @@ namespace LaylasLittleCompanion.Server.Pages
     public class LoginModel : PageModel
     {
 		public async Task OnGet() =>
-			await HttpContext.ChallengeAsync("oidc", new AuthenticationProperties { RedirectUri = "/" });
+			await HttpContext.ChallengeAsync("oidc", new AuthenticationProperties { RedirectUri = "/dashboard" });
 	}
 }

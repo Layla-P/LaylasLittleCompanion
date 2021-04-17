@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
@@ -36,6 +37,7 @@ namespace LaylasLittleCompanion.Server.Extensions
 				options.ClientSecret = configuration["TwitchConfiguration:ClientSecret"];
 
 				options.CallbackPath = new PathString("/signin-oidc");
+				options.AutomaticRefreshInterval = TimeSpan.FromHours(1);
 				options.SaveTokens = true;
 
 				string[] scopes = configuration.GetSection("TwitchConfiguration:Scopes").Get<string[]>();

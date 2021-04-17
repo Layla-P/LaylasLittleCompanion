@@ -1,18 +1,14 @@
+using Blazored.LocalStorage;
 using LaylasLittleCompanion.Server.Data;
 using LaylasLittleCompanion.Server.Extensions;
 using LaylasLittleCompanion.Server.Models;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
+//https://stackoverflow.com/questions/60858985/addopenidconnect-and-refresh-tokens-in-asp-net-core
 namespace LaylasLittleCompanion.Server
 {
 	public class Startup
@@ -31,10 +27,12 @@ namespace LaylasLittleCompanion.Server
 			services.Configure<TwitchConfiguration>(Configuration.GetSection("TwitchConfiguration"));
 
 			services.AddHttpClient();
-			services.AddHttpContextAccessor();
 			services.AddRazorPages();
 			services.AddServerSideBlazor();
+			services.AddGraphQLClient();
+			//services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 			services.AddSingleton<WeatherForecastService>();
+			services.AddBlazoredLocalStorage();
 
 			services.AddOIDCTwitch(Configuration);
 
@@ -66,6 +64,7 @@ namespace LaylasLittleCompanion.Server
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapBlazorHub();
+				endpoints.MapRazorPages();
 				endpoints.MapFallbackToPage("/_Host");
 			});
 		}

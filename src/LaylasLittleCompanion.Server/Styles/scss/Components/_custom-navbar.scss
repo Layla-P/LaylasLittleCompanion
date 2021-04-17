@@ -1,0 +1,51 @@
+﻿.navbar-teal {
+	background: $teal;
+
+	.navbar-brand {
+		color: $white;
+
+		&:hover,
+		&:focus {
+			color: $white;
+		}
+	}
+
+	.navbar-nav {
+		.nav-link {
+			color: $white;
+
+			&:hover,
+			&:focus {
+				color: $white;
+			}
+
+			&.disabled {
+				color: $gray-100;
+			}
+		}
+
+		.show > .nav-link,
+		.nav-link.active {
+			color: $yellow;
+		}
+	}
+
+	.navbar-toggler {
+		color: $navbar-light-color;
+		border-color: $navbar-light-toggler-border-color;
+	}
+
+	.navbar-toggler-icon {
+		background-image: escape-svg($navbar-light-toggler-icon-bg);
+	}
+
+	.navbar-text {
+		color: $navbar-light-color;
+
+		a,
+		a:hover,
+		a:focus {
+			color: $navbar-light-active-color;
+		}
+	}
+}
