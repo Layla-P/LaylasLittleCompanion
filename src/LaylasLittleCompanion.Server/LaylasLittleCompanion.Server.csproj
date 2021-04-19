@@ -19,10 +19,12 @@
 	<PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="3.2.3" />
 	<PackageReference Include="GraphQL.Client.Serializer.SystemTextJson" Version="3.2.3" />
 	<PackageReference Include="GraphQL.Client" Version="3.2.3" />
+	<PackageReference Include="WebStoating.Markdig.Prism" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Styles\css\" />
+    <Folder Include="wwwroot\js\" />
   </ItemGroup>
 
 </Project>
