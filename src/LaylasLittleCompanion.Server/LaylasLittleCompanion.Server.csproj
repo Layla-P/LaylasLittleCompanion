@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="3.0.0" />
+    <PackageReference Include="Markdig" Version="0.24.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.0-preview.3.21201.13" />
 	<PackageReference Include="GraphQL" Version="4.3.0" />
 	<PackageReference Include="GraphQL.Client.Abstractions" Version="3.2.3" />
