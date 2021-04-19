@@ -68,7 +68,7 @@
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		//await _jsRuntime.InvokeVoidAsync("Prism");
+		//todo: this isn't working as expected - lines are not highlighting
 		await _jsRuntime.InvokeVoidAsync("Prism.highlightAll");
 	}
 
