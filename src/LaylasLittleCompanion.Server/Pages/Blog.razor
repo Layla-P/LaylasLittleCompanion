@@ -3,7 +3,7 @@
 @using GraphQL
 @using GraphQL.Client.Http
 @using Models
-@using Newtonsoft.Json
+@using Markdig;
 
 @inject GraphQLHttpClient graphQlClient
 @inject NavigationManager navigation
@@ -30,13 +30,10 @@
 						<img src=""
 							 class="" />
 						<div>
-							@item.body
+							@ConvertToMarkUp(item.body)
 						</div>
 					</div>
 				</div>
-
-
-
 			}
 		</div>
 	</section>
@@ -63,6 +60,17 @@
 			item = res.Data.articleCollection.items.FirstOrDefault();
 		}
 
+	}
+
+	private string BuildHtmlFromMarkdown(string value) => Markdig.Markdown.ToHtml(
+	markdown: value,
+	pipeline: new MarkdownPipelineBuilder().UseAdvancedExtensions().Build()
+	);
+
+	//stolen from Ed Charbeneau - https://edcharbeneau.com/BlazeDown/ - with his permission!
+	private MarkupString ConvertToMarkUp(string markdown)
+	{
+		return (MarkupString)BuildHtmlFromMarkdown(markdown);
 	}
 
 	private async Task<GraphQLResponse<data>> GetResponse()
