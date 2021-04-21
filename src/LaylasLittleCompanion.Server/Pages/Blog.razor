@@ -3,10 +3,14 @@
 @using GraphQL
 @using GraphQL.Client.Http
 @using Models
-@using Newtonsoft.Json
+@using Markdig
+@using Markdig.Prism
 
 @inject GraphQLHttpClient graphQlClient
 @inject NavigationManager navigation
+@inject IJSRuntime _jsRuntime
+
+
 <div class="py-5 bg-light">
 	<section>
 		<div class="container">
@@ -29,14 +33,11 @@
 					<div class="">
 						<img src=""
 							 class="" />
-						<div>
-							@item.body
+						<div class="line-numbers">
+							@ConvertToMarkUp(item.body)
 						</div>
 					</div>
 				</div>
-
-
-
 			}
 		</div>
 	</section>
@@ -63,6 +64,26 @@
 			item = res.Data.articleCollection.items.FirstOrDefault();
 		}
 
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		//todo: this isn't working as expected - lines are not highlighting
+		await _jsRuntime.InvokeVoidAsync("highlightCode");
+	}
+
+	private string BuildHtmlFromMarkdown(string value) => Markdig.Markdown.ToHtml(
+						markdown: value,
+						pipeline: new MarkdownPipelineBuilder()
+							.UseAdvancedExtensions()
+							.UsePrism()
+							.Build()
+					);
+
+	//stolen from Ed Charbeneau - https://edcharbeneau.com/BlazeDown/ - with his permission!
+	private MarkupString ConvertToMarkUp(string markdown)
+	{
+		return (MarkupString)BuildHtmlFromMarkdown(markdown);
 	}
 
 	private async Task<GraphQLResponse<data>> GetResponse()
@@ -94,3 +115,6 @@ description
 		return await graphQlClient.SendQueryAsync<data>(articleRequest);
 	}
 }
+
+
+@* adding prism.js as described in this blog: https://blog.ladeak.net/posts/blazor-code-highlight*@
