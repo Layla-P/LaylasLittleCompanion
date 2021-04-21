@@ -1,12 +1,13 @@
 using Blazored.LocalStorage;
-using LaylasLittleCompanion.Server.Data;
 using LaylasLittleCompanion.Server.Extensions;
 using LaylasLittleCompanion.Server.Models;
+using LaylasLittleCompanion.Server.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TrelloNet;
 
 //https://stackoverflow.com/questions/60858985/addopenidconnect-and-refresh-tokens-in-asp-net-core
 namespace LaylasLittleCompanion.Server
@@ -24,17 +25,26 @@ namespace LaylasLittleCompanion.Server
 		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 		public void ConfigureServices(IServiceCollection services)
 		{
+			// tresting twitch integration https://github.com/FiniteSingularity/tau
 			services.Configure<TwitchConfiguration>(Configuration.GetSection("TwitchConfiguration"));
 
 			services.AddHttpClient();
+			services.AddSignalR();
+
+
 			services.AddRazorPages();
 			services.AddServerSideBlazor();
-			services.AddGraphQLClient();
-			//services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
-			services.AddSingleton<WeatherForecastService>();
+			services.AddGraphQLClient();			
 			services.AddBlazoredLocalStorage();
 
 			services.AddOIDCTwitch(Configuration);
+
+			//add config for trello
+			services.AddTrelloService(Configuration);
+
+			//register services
+
+
 
 		}
 
