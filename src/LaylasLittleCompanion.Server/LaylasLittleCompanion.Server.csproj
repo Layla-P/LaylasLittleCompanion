@@ -19,12 +19,13 @@
 	<PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="3.2.3" />
 	<PackageReference Include="GraphQL.Client.Serializer.SystemTextJson" Version="3.2.3" />
 	<PackageReference Include="GraphQL.Client" Version="3.2.3" />
+	<PackageReference Include="RestSharp" Version="104.4.0" />
 	<PackageReference Include="WebStoating.Markdig.Prism" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
 	<PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
-	<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.5" />
+	<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.0-preview.3.21201.13" />
 	<!--<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.5" />
 	<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.5" />
 	<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.5" />
@@ -35,16 +36,18 @@
 	<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.5" />
 	<PackageReference Include="RestSharp" Version="104.4.0" />-->
 	<PackageReference Include="trellonet" Version="0.6.2" />
-	<PackageReference Include="TwitchLib.Client" Version="3.1.5" />
-	<PackageReference Include="TwitchLib.PubSub" Version="3.1.5-CI-20200712-3" />
-	<PackageReference Include="TwitchLib.Api" Version="3.1.3" />
+	<PackageReference Include="TwitchLib.Client" Version="3.2.2" />
+	<PackageReference Include="TwitchLib.PubSub" Version="3.2.2" />
+	<PackageReference Include="TwitchLib.Api" Version="3.2.3" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Hub\" />
+    <Folder Include="Models\Enums\" />
     <Folder Include="Services\" />
     <Folder Include="Styles\css\" />
     <Folder Include="wwwroot\js\" />
+	<Folder Include="wwwroot\images\" />
   </ItemGroup>
 
 </Project>

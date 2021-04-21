@@ -1,9 +1,12 @@
 using Blazored.LocalStorage;
 using LaylasLittleCompanion.Server.Extensions;
+using LaylasLittleCompanion.Server.Hubs;
 using LaylasLittleCompanion.Server.Models;
 using LaylasLittleCompanion.Server.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,10 +31,10 @@ namespace LaylasLittleCompanion.Server
 		{
 			// tresting twitch integration https://github.com/FiniteSingularity/tau
 			services.Configure<TwitchConfiguration>(Configuration.GetSection("TwitchConfiguration"));
+			services.Configure<TrelloSettings>(Configuration.GetSection("TrelloSettings"));
 
 			services.AddHttpClient();
 			services.AddSignalR();
-
 
 			services.AddRazorPages();
 			services.AddServerSideBlazor();
@@ -40,12 +43,14 @@ namespace LaylasLittleCompanion.Server
 
 			services.AddOIDCTwitch(Configuration);
 
-			//add config for trello
+			
 			services.AddTrelloService(Configuration);
 
-			//register services
+			services.AddScoped<TwitchApiService>();
+			services.AddScoped<TwitchClientService>();
 
-
+			var serviceProvider = services.BuildServiceProvider();
+			_ = serviceProvider.GetService<TwitchClientService>();
 
 		}
 
@@ -77,6 +82,7 @@ namespace LaylasLittleCompanion.Server
 				endpoints.MapBlazorHub();
 				endpoints.MapRazorPages();
 				endpoints.MapFallbackToPage("/_Host");
+				endpoints.MapHub<ChatHub>("/chathub");
 			});
 		}
 	}

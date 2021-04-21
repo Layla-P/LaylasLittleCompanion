@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using MvcChatBot.Models;
+using LaylasLittleCompanion.Server.Models.Enums;
 
-namespace MvcChatBot.Hubs
+namespace LaylasLittleCompanion.Server.Hubs
 {
     public class ChatHub : Hub
     {

@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using LaylasLittleCompanion.Server.Hubs;
+using LaylasLittleCompanion.Server.Models;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,25 +13,28 @@ using TwitchLib.Api.Services.Events;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 
-namespace MvcChatBot.Agent.Services
+namespace LaylasLittleCompanion.Server.Services
 {
     public class TwitchApiService
     {
         private LiveStreamMonitorService Monitor;
         private TwitchAPI API;
-        //private FollowerService FollowerService;
-        private readonly TwitchSettings _settings;
-        private readonly HubConnection _connection;
+        private readonly TwitchConfiguration _settings;
 
-        public TwitchApiService(TwitchSettings settings, HubConnection connection)
+        public TwitchApiService(IOptions<TwitchConfiguration> settings)
         {
-            _settings = settings;
-            _connection = connection;
-            _connection.StartAsync();
-            Task.Run(() => ConfigLiveMonitorAsync());
+			_settings = settings.Value;
+			API = new TwitchAPI();
+			API.Settings.ClientId = _settings.ClientId;
+			API.Settings.AccessToken = _settings.ChannelAuthToken;
+			Task.Run(() => ConfigLiveMonitorAsync());
         }
-
-        private async Task ConfigLiveMonitorAsync()
+		public async Task<string> GetStatsAsync()
+		{
+			var currentStream = await API.V5.Streams.GetStreamByUserAsync(_settings.ChannelId);
+			return $"Current stats for {currentStream.Stream.Channel.DisplayName}: {currentStream.Stream.Viewers} viewers, {currentStream.Stream.Channel.Views} views and {currentStream.Stream.Channel.Followers}.";
+		}
+		private async Task ConfigLiveMonitorAsync()
         {
             API = new TwitchAPI();
 
