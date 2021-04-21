@@ -33,7 +33,7 @@
 					<div class="">
 						<img src=""
 							 class="" />
-						<div>
+						<div class="line-numbers">
 							@ConvertToMarkUp(item.body)
 						</div>
 					</div>
@@ -69,7 +69,7 @@
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		//todo: this isn't working as expected - lines are not highlighting
-		await _jsRuntime.InvokeVoidAsync("Prism.highlightAll");
+		await _jsRuntime.InvokeVoidAsync("highlightCode");
 	}
 
 	private string BuildHtmlFromMarkdown(string value) => Markdig.Markdown.ToHtml(
