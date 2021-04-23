@@ -15,9 +15,6 @@ using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
-using LaylasLittleCompanion.Server.Services;
-using Microsoft.AspNetCore.SignalR;
-using LaylasLittleCompanion.Server.Hubs;
 using LaylasLittleCompanion.Server.Models.Enums;
 using Microsoft.Extensions.Options;
 
@@ -27,19 +24,16 @@ namespace LaylasLittleCompanion.Server.Services
 	{
 		private readonly TwitchClient _client;
 		private readonly TwitchConfiguration _settings;
-		private readonly IHubContext<ChatHub> _hub;
 		private readonly TrelloService _trelloService;
 		private List<User> liveCodersTeamMembers;
 		private List<string> welcomedMemberIds = new List<string>();
-
+		public event EventHandler<ChatEventArgs> TestEvent;
 
 		public TwitchClientService(
 			IOptions<TwitchConfiguration> settings,
-			IHubContext<ChatHub> hub,
 			TrelloService trelloService)
 		{
 			_settings = settings.Value;
-			_hub = hub;
 			_trelloService = trelloService;
 
 
@@ -61,7 +55,7 @@ namespace LaylasLittleCompanion.Server.Services
 			_client.OnRaidNotification += Client_OnRaidNotification;
 			_client.OnNewSubscriber += Client_OnNewSubscriber;
 			_client.OnGiftedSubscription += Client_OnGiftSubscriber;
-			_client.OnMessageReceived += Client_MessageReceived;
+			//_client.OnMessageReceived += Client_MessageReceived;
 
 			_client.OnConnected += Client_OnConnected;
 
@@ -78,56 +72,56 @@ namespace LaylasLittleCompanion.Server.Services
 		}
 		private async void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
 		{
-			Console.WriteLine("Hey guys! I am a bot connected via TwitchLib!");
-			_client.SendMessage(e.Channel, "Hello lovelies, I'm Layla's little helper!");
+			//Console.WriteLine("Hey guys! I am a bot connected via TwitchLib!");
+			//_client.SendMessage(e.Channel, "Hello lovelies, I'm Layla's little helper!");
 
-			liveCodersTeamMembers = await GetTeamMembers("livecoders");
+			//liveCodersTeamMembers = await GetTeamMembers("livecoders");
 		}
-		private void Client_MessageReceived(object sender, OnMessageReceivedArgs e)
-		{
-			var userId = e.ChatMessage.UserId;
-			var userDisplayName = e.ChatMessage.DisplayName;
-			var username = e.ChatMessage.Username;
-			if (e.ChatMessage.IsVip || e.ChatMessage.IsSubscriber || e.ChatMessage.IsModerator)
-			{
-				if (!welcomedMemberIds.Contains(userId))
-				{
-					welcomedMemberIds.Add(userId);
-					_client.SendMessage(e.ChatMessage.Channel, $"Welcome back {userDisplayName}, thanks for choosing to hang out with us 🤗💖");
-				}
-			}
-			else if (liveCodersTeamMembers.Any(c => c._Id == userId))
-			{
-				if (!welcomedMemberIds.Contains(userId))
-				{
-					welcomedMemberIds.Add(userId);
-					var url = $"https://twitch.tv/{username}";
-					_client.SendMessage(e.ChatMessage.Channel, $"Welcome to chat, {userDisplayName}! They are a member of the Livecoders 🎉! Check them out on {url}");
-				}
-			}
+		//private void Client_MessageReceived(object sender, OnMessageReceivedArgs e)
+		//{
+		//	var userId = e.ChatMessage.UserId;
+		//	var userDisplayName = e.ChatMessage.DisplayName;
+		//	var username = e.ChatMessage.Username;
+		//	if (e.ChatMessage.IsVip || e.ChatMessage.IsSubscriber || e.ChatMessage.IsModerator)
+		//	{
+		//		if (!welcomedMemberIds.Contains(userId))
+		//		{
+		//			welcomedMemberIds.Add(userId);
+		//			_client.SendMessage(e.ChatMessage.Channel, $"Welcome back {userDisplayName}, thanks for choosing to hang out with us 🤗💖");
+		//		}
+		//	}
+		//	else if (liveCodersTeamMembers.Any(c => c._Id == userId))
+		//	{
+		//		if (!welcomedMemberIds.Contains(userId))
+		//		{
+		//			welcomedMemberIds.Add(userId);
+		//			var url = $"https://twitch.tv/{username}";
+		//			_client.SendMessage(e.ChatMessage.Channel, $"Welcome to chat, {userDisplayName}! They are a member of the Livecoders 🎉! Check them out on {url}");
+		//		}
+		//	}
 
 
-		}
-		private async Task<List<User>> GetTeamMembers(string teamName)
-		{
-			using (var client = new HttpClient())
-			{
-				client.DefaultRequestHeaders.Add("Client-ID", _settings.ClientId);
-				client.DefaultRequestHeaders.Add("Accept", "application/vnd.twitchtv.v5+json");
-				var response = await client.GetAsync($"https://api.twitch.tv/kraken/teams/{teamName}");
-				var jsonString = await response.Content.ReadAsStringAsync();
+		//}
+		//private async Task<List<User>> GetTeamMembers(string teamName)
+		//{
+		//	using (var client = new HttpClient())
+		//	{
+		//		client.DefaultRequestHeaders.Add("Client-ID", _settings.ClientId);
+		//		client.DefaultRequestHeaders.Add("Accept", "application/vnd.twitchtv.v5+json");
+		//		var response = await client.GetAsync($"https://api.twitch.tv/kraken/teams/{teamName}");
+		//		var jsonString = await response.Content.ReadAsStringAsync();
 
-				var options = new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true,
-				};
+		//		var options = new JsonSerializerOptions
+		//		{
+		//			PropertyNameCaseInsensitive = true,
+		//		};
 
-				var teamResponse = JsonSerializer.Deserialize<TeamResponse>(jsonString, options);
+		//		var teamResponse = JsonSerializer.Deserialize<TeamResponse>(jsonString, options);
 
-				return teamResponse.Users;
-			}
+		//		return teamResponse.Users;
+		//	}
 
-		}
+		//}
 		private async void Client_OnCommandReceived(object sender, OnChatCommandReceivedArgs e)
 		{
 
@@ -156,14 +150,11 @@ namespace LaylasLittleCompanion.Server.Services
 				case "waffle":
 					await Waffling(e.Command);
 					break;
-				//case "balls":
-				//    await PlayBalls(e.Command);
-				//    break;
+				case "testing":
+					 TestEvent?.Invoke(this, new ChatEventArgs { Action = "super"});
+					break;
 				case "swag":
 					await PlayBalls(e.Command);
-					break;
-				case "laylatest":
-					await Test(e.Command);
 					break;
 				default:
 					break;
@@ -174,13 +165,13 @@ namespace LaylasLittleCompanion.Server.Services
 		}
 		private async Task MakeItRain(ChatCommand e)
 		{
-			await _hub.Clients.All.SendAsync("LaylaMessage", e.ChatMessage.DisplayName, "Make it rain!!!", MessageTypeEnum.Rain);
+			//await _hub.Clients.All.SendAsync("LaylaMessage", e.ChatMessage.DisplayName, "Make it rain!!!", MessageTypeEnum.Rain);
 			//await _connection.InvokeAsync("SendMessage", e.ChatMessage.DisplayName, "Make it rain!!!", MessageTypeEnum.Rain);
 			//await _hub.Clients.All.SendAsync("LaylaMessage", user, message, action);
 		}
 		private async Task Waffling(ChatCommand e)
 		{
-			await _hub.Clients.All.SendAsync("SendMessage", e.ChatMessage.DisplayName, "Make it rain!!!", MessageTypeEnum.Waffle);
+			//await _hub.Clients.All.SendAsync("SendMessage", e.ChatMessage.DisplayName, "Make it rain!!!", MessageTypeEnum.Waffle);
 			_client.SendMessage(e.ChatMessage.Channel, "Layla is waffling!!");
 		}
 		private async Task PlayBalls(ChatCommand e)
@@ -191,7 +182,7 @@ namespace LaylasLittleCompanion.Server.Services
 				// _client.SendMessage(e.ChatMessage.Channel, "Time to get your balls in! Type !prizedraw in the chat to be in with a chance to win!");
 				_client.SendMessage(e.ChatMessage.Channel, "Type !winbooty to be in for a chance of winning some booty!");
 
-				await _hub.Clients.All.SendAsync("PlaySoundMessage", e.ChatMessage.DisplayName, "balls");
+				//await _hub.Clients.All.SendAsync("PlaySoundMessage", e.ChatMessage.DisplayName, "balls");
 			}
 		}
 		private async void Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
@@ -199,7 +190,7 @@ namespace LaylasLittleCompanion.Server.Services
 			int.TryParse(e.RaidNotification.MsgParamViewerCount, out var count);
 
 			count = count != 0 ? count : 1;
-			await _hub.Clients.All.SendAsync("Raid", count);
+			//await _hub.Clients.All.SendAsync("Raid", count);
 
 		}
 		private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
@@ -220,8 +211,8 @@ namespace LaylasLittleCompanion.Server.Services
 		{
 			try
 			{
-				await _hub.Clients.All.SendAsync("SendMessage", e.GiftedSubscription.DisplayName, "Waffling", MessageTypeEnum.Cannon);
-				await _hub.Clients.All.SendAsync("PlaySoundMessage", e.GiftedSubscription.DisplayName, "cannon");
+				//await _hub.Clients.All.SendAsync("SendMessage", e.GiftedSubscription.DisplayName, "Waffling", MessageTypeEnum.Cannon);
+				//await _hub.Clients.All.SendAsync("PlaySoundMessage", e.GiftedSubscription.DisplayName, "cannon");
 				_client.SendMessage(e.Channel,
 					   $"Woweee! {e.GiftedSubscription.DisplayName} just gifted {e.GiftedSubscription.MsgParamRecipientDisplayName} a subscription! Thank you so much <3");
 			}
@@ -233,7 +224,7 @@ namespace LaylasLittleCompanion.Server.Services
 
 		private async Task Test(ChatCommand e)
 		{
-			await _hub.Clients.All.SendAsync("SendMessage", "TEST", "TEST", MessageTypeEnum.Cannon);
+			//await _hub.Clients.All.SendAsync("SendMessage", "TEST", "TEST", MessageTypeEnum.Cannon);
 		}
 		private void CreateTrelloCard(ChatCommand e, string listName)
 		{

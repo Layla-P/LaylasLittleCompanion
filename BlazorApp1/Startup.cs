@@ -1,19 +1,17 @@
-using Blazored.LocalStorage;
-using LaylasLittleCompanion.Server.Extensions;
-using LaylasLittleCompanion.Server.Models;
-using LaylasLittleCompanion.Server.Services;
+using BlazorApp1.Data;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using TrelloNet;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-
-//https://stackoverflow.com/questions/60858985/addopenidconnect-and-refresh-tokens-in-asp-net-core
-namespace LaylasLittleCompanion.Server
+namespace BlazorApp1
 {
 	public class Startup
 	{
@@ -28,28 +26,9 @@ namespace LaylasLittleCompanion.Server
 		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 		public void ConfigureServices(IServiceCollection services)
 		{
-			// tresting twitch integration https://github.com/FiniteSingularity/tau
-			services.Configure<TwitchConfiguration>(Configuration.GetSection("TwitchConfiguration"));
-			services.Configure<TrelloSettings>(Configuration.GetSection("TrelloSettings"));
-
-			services.AddHttpClient();
-
 			services.AddRazorPages();
 			services.AddServerSideBlazor();
-			services.AddGraphQLClient();			
-			services.AddBlazoredLocalStorage();
-
-			services.AddOIDCTwitch(Configuration);
-
-			
-			services.AddTrelloService(Configuration);
-
-			services.AddSingleton<TwitchApiService>();
-			services.AddSingleton<TwitchClientService>();
-
-			var serviceProvider = services.BuildServiceProvider();
-			_ = serviceProvider.GetService<TwitchClientService>();
-
+			services.AddSingleton<WeatherForecastService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,16 +50,10 @@ namespace LaylasLittleCompanion.Server
 
 			app.UseRouting();
 
-			app.UseAuthentication();
-			app.UseAuthorization();
-
-
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapBlazorHub();
-				endpoints.MapRazorPages();
 				endpoints.MapFallbackToPage("/_Host");
-				//endpoints.MapHub<ChatHub>("/chathub");
 			});
 		}
 	}

@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.31105.61
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaylasLittleCompanion.Server", "src\LaylasLittleCompanion.Server\LaylasLittleCompanion.Server.csproj", "{42657805-44FD-44DD-9277-DEA403868B9F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaylasLittleCompanion.Common", "src\LaylasLittleCompanion.Common\LaylasLittleCompanion.Common.csproj", "{68D2E5D0-8424-4B4E-A484-514329061D65}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{42657805-44FD-44DD-9277-DEA403868B9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42657805-44FD-44DD-9277-DEA403868B9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42657805-44FD-44DD-9277-DEA403868B9F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{68D2E5D0-8424-4B4E-A484-514329061D65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{68D2E5D0-8424-4B4E-A484-514329061D65}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{68D2E5D0-8424-4B4E-A484-514329061D65}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{68D2E5D0-8424-4B4E-A484-514329061D65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

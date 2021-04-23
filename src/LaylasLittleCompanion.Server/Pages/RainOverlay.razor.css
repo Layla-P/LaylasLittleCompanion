@@ -1,0 +1,21 @@
+﻿html {
+	position: relative;
+	min-height: 100%;
+}
+
+body {
+	/* Margin bottom by footer height */
+	margin-bottom: 60px;
+	background-color: transparent;
+}
+
+
+.boops {
+	display: block;
+	height: 100vh;
+	margin: 0;
+	overflow: hidden;
+	position: absolute;
+	top: 0;
+	z-index: 1;
+}
