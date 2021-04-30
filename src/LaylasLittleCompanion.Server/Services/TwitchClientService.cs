@@ -27,7 +27,7 @@ namespace LaylasLittleCompanion.Server.Services
 		private readonly TrelloService _trelloService;
 		private List<User> liveCodersTeamMembers;
 		private List<string> welcomedMemberIds = new List<string>();
-		public event EventHandler<ChatEventArgs> TestEvent;
+		public event EventHandler<OnChatCommandReceivedArgs> BoopEvent;
 
 		public TwitchClientService(
 			IOptions<TwitchConfiguration> settings,
@@ -145,13 +145,9 @@ namespace LaylasLittleCompanion.Server.Services
 					CreateTrelloCard(e.Command, "links");
 					break;
 				case "puprain":
-					await MakeItRain(e.Command);
-					break;
 				case "waffle":
-					await Waffling(e.Command);
-					break;
 				case "testing":
-					 TestEvent?.Invoke(this, new ChatEventArgs { Action = "super"});
+					 BoopEvent?.Invoke(this, e);
 					break;
 				case "swag":
 					await PlayBalls(e.Command);
