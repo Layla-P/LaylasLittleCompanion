@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Net.Http.Headers;
 using TrelloNet;
 
 
@@ -31,8 +33,18 @@ namespace LaylasLittleCompanion.Server
 			// tresting twitch integration https://github.com/FiniteSingularity/tau
 			services.Configure<TwitchConfiguration>(Configuration.GetSection("TwitchConfiguration"));
 			services.Configure<TrelloSettings>(Configuration.GetSection("TrelloSettings"));
+			services.Configure<TwitterSettings>(Configuration.GetSection("TwitterSettings"));
 
 			services.AddHttpClient();
+			services.AddHttpClient("TwitterClient", c =>
+			{
+				c.BaseAddress = new Uri("https://api.twitter.com/1.1/account/");
+				c.DefaultRequestHeaders.Add("Accept", "application/json");
+				c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Configuration.GetValue<string>("TwitterSettings.BearerToken"));
+
+			});
+
+			services.AddSingleton<TwitterService>();
 
 			services.AddRazorPages();
 			services.AddServerSideBlazor();
@@ -45,10 +57,16 @@ namespace LaylasLittleCompanion.Server
 			services.AddTrelloService(Configuration);
 
 			services.AddSingleton<TwitchApiService>();
+
 			services.AddSingleton<TwitchClientService>();
 
-			var serviceProvider = services.BuildServiceProvider();
-			_ = serviceProvider.GetService<TwitchClientService>();
+
+			//var serviceProvider = services.BuildServiceProvider();
+			//_ = serviceProvider.GetService<TwitchClientService>();
+
+
+
+
 
 		}
 
@@ -66,6 +84,7 @@ namespace LaylasLittleCompanion.Server
 				app.UseHsts();
 			}
 
+			
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
 

@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Net.Http;
 using System.Reflection;
-using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR.Client;
 using LaylasLittleCompanion.Server.Models;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
@@ -15,8 +11,8 @@ using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
-using LaylasLittleCompanion.Server.Models.Enums;
 using Microsoft.Extensions.Options;
+using TwitchLib.Api;
 
 namespace LaylasLittleCompanion.Server.Services
 {
@@ -25,17 +21,21 @@ namespace LaylasLittleCompanion.Server.Services
 		private readonly TwitchClient _client;
 		private readonly TwitchConfiguration _settings;
 		private readonly TrelloService _trelloService;
+		private readonly TwitchApiService _apiService;
 		private List<User> liveCodersTeamMembers;
 		private List<string> welcomedMemberIds = new List<string>();
 		public event EventHandler<OnChatCommandReceivedArgs> BoopEvent;
 
 		public TwitchClientService(
 			IOptions<TwitchConfiguration> settings,
+			TwitchApiService apiService,
 			TrelloService trelloService)
 		{
 			_settings = settings.Value;
+			_apiService = apiService;
 			_trelloService = trelloService;
-
+			
+		
 
 
 
@@ -62,6 +62,8 @@ namespace LaylasLittleCompanion.Server.Services
 			_client.Connect();
 
 		}
+
+	
 		private void Client_OnLog(object sender, OnLogArgs e)
 		{
 			Console.WriteLine($"{e.DateTime}: {e.BotUsername} - {e.Data}");
@@ -146,11 +148,13 @@ namespace LaylasLittleCompanion.Server.Services
 					break;
 				case "puprain":
 				case "waffle":
-				case "testing":
-					 BoopEvent?.Invoke(this, e);
+					BoopEvent?.Invoke(this, e);
 					break;
 				case "swag":
 					await PlayBalls(e.Command);
+					break;
+				case "stats":
+					await GetStats(e.Command);
 					break;
 				default:
 					break;
@@ -180,6 +184,11 @@ namespace LaylasLittleCompanion.Server.Services
 
 				//await _hub.Clients.All.SendAsync("PlaySoundMessage", e.ChatMessage.DisplayName, "balls");
 			}
+		}
+		private async Task GetStats(ChatCommand e)
+		{
+			var currentStats = await _apiService.GetStatsAsync();
+			_client.SendMessage(e.ChatMessage.Channel, currentStats);
 		}
 		private async void Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
 		{
@@ -276,5 +285,7 @@ namespace LaylasLittleCompanion.Server.Services
 		{
 			return message.TrimStart('"').TrimEnd('"').Split("\" \"");
 		}
+
+		
 	}
 }

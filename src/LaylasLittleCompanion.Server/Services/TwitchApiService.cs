@@ -17,30 +17,39 @@ namespace LaylasLittleCompanion.Server.Services
     public class TwitchApiService
     {
         private LiveStreamMonitorService Monitor;
-        private TwitchAPI API;
-        private readonly TwitchConfiguration _settings;
+        private TwitchAPI _api;
+		private readonly TwitterService _twitterService;
+		private readonly TwitchConfiguration _settings;
 
-        public TwitchApiService(IOptions<TwitchConfiguration> settings)
+        public TwitchApiService(
+			IOptions<TwitchConfiguration> settings,
+			TwitterService twitterService)
         {
 			_settings = settings.Value;
-			API = new TwitchAPI();
-			API.Settings.ClientId = _settings.ClientId;
-			API.Settings.AccessToken = _settings.ChannelAuthToken;
+			_api = new TwitchAPI();
+			_twitterService = twitterService;
+			_api.Settings.ClientId = _settings.ClientId;
+			_api.Settings.AccessToken = _settings.ChannelAuthToken;
 			Task.Run(() => ConfigLiveMonitorAsync());
         }
+
+		public async Task Test()
+		{
+			await _twitterService.UpdateName("🔴 Layla is LIVE on Twitch");
+		}
 		public async Task<string> GetStatsAsync()
 		{
-			var currentStream = await API.V5.Streams.GetStreamByUserAsync(_settings.ChannelId);
+			var currentStream = await _api.V5.Streams.GetStreamByUserAsync(_settings.ChannelId);
 			return $"Current stats for {currentStream.Stream.Channel.DisplayName}: {currentStream.Stream.Viewers} viewers, {currentStream.Stream.Channel.Views} views and {currentStream.Stream.Channel.Followers}.";
 		}
 		private async Task ConfigLiveMonitorAsync()
         {
-            API = new TwitchAPI();
+			_api = new TwitchAPI();
 
-            API.Settings.ClientId = _settings.ClientId;
-            API.Settings.AccessToken = _settings.ChannelAuthToken;
+			_api.Settings.ClientId = _settings.ClientId;
+			_api.Settings.AccessToken = _settings.ChannelAuthToken;
 
-            Monitor = new LiveStreamMonitorService(API, 30);
+            Monitor = new LiveStreamMonitorService(_api, 30);
             //FollowerService = new FollowerService(API, 30, 10);
 
             List<string> channels = new List<string> { _settings.ChannelId};
@@ -65,30 +74,30 @@ namespace LaylasLittleCompanion.Server.Services
             await Task.Delay(-1);
         }
 
-        //private void Follower_OnNewFollow(object sender, OnNewFollowersDetectedArgs e)
-        //{
-           
-                     
-        //    e.NewFollowers.ForEach(async(follower) => {
-        //        Console.WriteLine($"New follower: {follower.FromUserName}");
-        //        await _connection.InvokeAsync("PlaySoundMessage", follower.FromUserName, "follow");
-        //    });
-        //}
+		private void Follower_OnNewFollow(object sender, OnNewFollowersDetectedArgs e)
+		{
+			e.NewFollowers.ForEach(async (follower) =>
+			{
+				Console.WriteLine($"New follower: {follower.FromUserName}");
+				//await _connection.InvokeAsync("PlaySoundMessage", follower.FromUserName, "follow");
+			});
+		}
 
-        //private void Follower_OnServiceStarted(object sender, OnServiceStartedArgs e)
-        //{
-        //    Console.WriteLine("OnFollowerService Started");
-        //}
-
-
-        //private void Follower_OnChannelsSet(object sender, OnChannelsSetArgs e)
-        //{
-        //    Console.WriteLine("Follower OnChannelSet from Api");
-        //}
+		//private void Follower_OnServiceStarted(object sender, OnServiceStartedArgs e)
+		//{
+		//    Console.WriteLine("OnFollowerService Started");
+		//}
 
 
-        private void Monitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
+		//private void Follower_OnChannelsSet(object sender, OnChannelsSetArgs e)
+		//{
+		//    Console.WriteLine("Follower OnChannelSet from Api");
+		//}
+
+
+		private async void Monitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
         {
+			await _twitterService.UpdateName("🔴 Layla is live on Twitch");
             Console.WriteLine("Stream online from Api");
         }
 
@@ -111,5 +120,10 @@ namespace LaylasLittleCompanion.Server.Services
         {
             Console.WriteLine("OnMonitorService Started");
         }
-    }
+
+		public static implicit operator TwitchApiService(TwitchClientService v)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }
