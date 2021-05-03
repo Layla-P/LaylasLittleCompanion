@@ -34,8 +34,8 @@ namespace LaylasLittleCompanion.Server.Services
         }
 
 		public async Task Test()
-		{
-			await _twitterService.UpdateName("🔴 Layla is LIVE on Twitch");
+		{await _twitterService.UpdateName("🔴 Layla is LIVE on Twitch");
+			
 		}
 		public async Task<string> GetStatsAsync()
 		{
@@ -97,7 +97,7 @@ namespace LaylasLittleCompanion.Server.Services
 
 		private async void Monitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
         {
-			await _twitterService.UpdateName("🔴 Layla is live on Twitch");
+			await _twitterService.UpdateName("🔴 Layla is LIVE on Twitch");
             Console.WriteLine("Stream online from Api");
         }
 
@@ -106,9 +106,10 @@ namespace LaylasLittleCompanion.Server.Services
             Console.WriteLine("Stream updated from Api");
         }
 
-        private void Monitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
+        private async void Monitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
-            Console.WriteLine("Stream offline from Api");
+			await _twitterService.ResetName();
+			Console.WriteLine("Stream offline from Api");
         }
 
         private void Monitor_OnChannelsSet(object sender, OnChannelsSetArgs e)
