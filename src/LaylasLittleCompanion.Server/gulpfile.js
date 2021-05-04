@@ -28,4 +28,10 @@ gulp.task('styles', () => {
 
 
 
-gulp.task('default', gulp.series(['styles',]));
+gulp.task('default', gulp.series(['styles',]), function () {
+	// watch for CSS changes
+	gulp.watch('Styles/scss/*.scss', function () {
+		// run styles upon changes
+		gulp.run('styles');
+	});
+});

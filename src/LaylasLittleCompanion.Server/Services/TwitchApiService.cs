@@ -97,7 +97,7 @@ namespace LaylasLittleCompanion.Server.Services
 
 		private async void Monitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
         {
-			await _twitterService.UpdateName("🔴 Layla is LIVE on Twitch");
+			//await _twitterService.UpdateName("🔴 Layla is LIVE on Twitch");
             Console.WriteLine("Stream online from Api");
         }
 
@@ -108,7 +108,7 @@ namespace LaylasLittleCompanion.Server.Services
 
         private async void Monitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
-			await _twitterService.ResetName();
+			//await _twitterService.ResetName();
 			Console.WriteLine("Stream offline from Api");
         }
 

@@ -30,14 +30,27 @@ $teal: #20c997 !default;
 $cyan: #0dcaf0 !default;
 // scss-docs-end color-variables
 
+//custom colours
+$sage: #C2C6C1;
+$sage-dark: #A6ACAC;
+$mauve: #9F889C;
+$pink: #F3A7BF;
+$red: #AF605B;
+$red-light: #B67773;
+$pink-light: #F9E7E6;
+$pink-mauve: #d7adc1;
+$cocoa: #C9AFB0;
+$white-off: #fdfbfc;
+
+
 // scss-docs-start colors-map
 $colors: ( "blue": $blue, "indigo": $indigo, "purple": $purple, "pink": $pink, "red": $red, "orange": $orange, "yellow": $yellow, "green": $green, "teal": $teal, "cyan": $cyan, "white": $white, "gray": $gray-600, "gray-dark": $gray-800 ) !default;
-$primary: $blue !default;
-$secondary: $gray-600 !default;
+$primary: $sage-dark;
+$secondary: $pink-mauve;
 $success: $green !default;
-$info: $cyan !default;
+$info: $cocoa;
 $warning: $yellow !default;
-$danger: $red !default;
+$danger: $red;
 $light: $gray-100 !default;
 $dark: $gray-900 !default;
 
@@ -54,3 +67,7 @@ $theme-colors:
 	"danger": $danger,
 	"light": $light,
 	"dark": $dark );
+
+$body-bg: $pink-light;
+/*$body-color: $gray-900 !default;*/
+

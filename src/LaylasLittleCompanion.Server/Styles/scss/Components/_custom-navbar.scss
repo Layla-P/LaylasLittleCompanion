@@ -1,12 +1,12 @@
-﻿.navbar-teal {
-	background: $teal;
+﻿.navbar-lp {
+	background: $mauve;
 
 	.navbar-brand {
-		color: $white;
+		color: $pink-light;
 
 		&:hover,
 		&:focus {
-			color: $white;
+			color: $pink-mauve;
 		}
 	}
 
@@ -48,4 +48,12 @@
 			color: $navbar-light-active-color;
 		}
 	}
+}
+.navbar-lp .navbar-toggler {
+	color: $pink-light;
+	border-color: $pink-light;
+}
+
+.navbar-toggle-icon {
+	background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='#F9E7E6' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E")
 }

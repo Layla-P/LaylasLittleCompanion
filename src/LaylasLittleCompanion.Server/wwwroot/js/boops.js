@@ -40,14 +40,14 @@ function createBall(image) {
         angle: Math.PI * (Math.random() * 2 - 1),
         friction: 0.001,
         frictionAir: 0.01,
-        restitution: 0.8,
+		restitution: 0.8,
         render: {
             sprite: {
                 texture: image
             }
         }
     });
-
+	
     setTimeout(() => {
         World.remove(engine.world, ball);
     }, 30000);

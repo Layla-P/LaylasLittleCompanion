@@ -1,16 +1,27 @@
 ﻿@page "/"
-@using LaylasLittleCompanion.Server.Services
-@inject TwitchClientService _client
+@using LaylasLittleCompanion.Server.Models.Enums
+@*@using LaylasLittleCompanion.Server.Services
+@inject TwitchClientService _client*@
 
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
-
+<InteractiveButton 
+ButtonText="Puppy rain" 
+ButtonClass="danger" 
+ButtonIcon ="images/destructopup-112.png"
+ButtonAction="MessageTypeEnum.Rain"/>
+<InteractiveButton 
+ButtonText="Waffling" 
+ButtonClass="danger" 
+ButtonAction="MessageTypeEnum.Waffle"
+ButtonIcon="images/waffle.png"/>
 <AuthorizeView>
 	<Authorized>
 		<h1>Hello, @context.User.Identity.Name!</h1>
-		<p>You can only see this content if you're authenticated.</p>
+		<p>You can only see this content if you're authenticated.</p>	
+		
 	</Authorized>
 	<NotAuthorized>
 		<a href="/login">Login</a>

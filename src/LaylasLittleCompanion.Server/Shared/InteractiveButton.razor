@@ -1,0 +1,23 @@
+﻿@using LaylasLittleCompanion.Server.Models.Enums
+@using LaylasLittleCompanion.Server.Services
+@using Microsoft.AspNetCore.SignalR.Client
+@inject TwitchClientService twitchClient
+@inject HubConnection hubConnection
+
+<button  @ref="ChatElement" class="btn btn-@ButtonClass" @onclick="Send" >@ButtonText</button>
+
+@code{
+	ElementReference ChatElement { get; set; }
+	[ParameterAttribute] public string ButtonText { get; set; }
+	[ParameterAttribute] public string ButtonClass { get; set; }
+	[ParameterAttribute] public string ButtonIcon { get; set; }
+	[ParameterAttribute] public MessageTypeEnum ButtonAction { get; set; }
+
+	protected async override Task OnInitializedAsync()
+	{
+	
+	}
+
+	 async Task Send() =>
+        await hubConnection.SendAsync("SendMessage", ButtonAction);
+}

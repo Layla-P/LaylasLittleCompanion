@@ -11,7 +11,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Net.Http.Headers;
-using TrelloNet;
+using Microsoft.AspNetCore.ResponseCompression;
+using System.Linq;
+using LaylasLittleCompanion.Server.Hubs;
+
 
 
 //https://stackoverflow.com/questions/60858985/addopenidconnect-and-refresh-tokens-in-asp-net-core
@@ -30,6 +33,15 @@ namespace LaylasLittleCompanion.Server
 		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 		public void ConfigureServices(IServiceCollection services)
 		{
+
+			var baseAddress = Configuration.GetValue<string>("BaseAddress");
+
+			var  rainHubConnection = new HubConnectionBuilder()
+				.WithUrl($"{baseAddress}/rainhub")
+				.WithAutomaticReconnect()
+				.Build();
+			rainHubConnection.StartAsync();
+			services.AddSingleton(rainHubConnection);
 			// tresting twitch integration https://github.com/FiniteSingularity/tau
 			services.Configure<TwitchConfiguration>(Configuration.GetSection("TwitchConfiguration"));
 			services.Configure<TrelloSettings>(Configuration.GetSection("TrelloSettings"));
@@ -52,8 +64,12 @@ namespace LaylasLittleCompanion.Server
 			services.AddBlazoredLocalStorage();
 
 			services.AddOIDCTwitch(Configuration);
+			services.AddResponseCompression(opts =>
+			{
+				opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+					new[] { "application/octet-stream" });
+			});
 
-			
 			services.AddTrelloService(Configuration);
 
 			services.AddSingleton<TwitchApiService>();
@@ -73,6 +89,7 @@ namespace LaylasLittleCompanion.Server
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
+			app.UseResponseCompression();
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
@@ -99,7 +116,7 @@ namespace LaylasLittleCompanion.Server
 				endpoints.MapBlazorHub();
 				endpoints.MapRazorPages();
 				endpoints.MapFallbackToPage("/_Host");
-				//endpoints.MapHub<ChatHub>("/chathub");
+				endpoints.MapHub<RainHub>("/rainhub");
 			});
 		}
 	}

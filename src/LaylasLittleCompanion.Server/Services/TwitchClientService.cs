@@ -12,7 +12,11 @@ using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
 using Microsoft.Extensions.Options;
+
 using TwitchLib.Api;
+using LaylasLittleCompanion.Server.Hubs;
+using Microsoft.AspNetCore.SignalR.Client;
+using LaylasLittleCompanion.Server.Models.Enums;
 
 namespace LaylasLittleCompanion.Server.Services
 {
@@ -24,21 +28,19 @@ namespace LaylasLittleCompanion.Server.Services
 		private readonly TwitchApiService _apiService;
 		private List<User> liveCodersTeamMembers;
 		private List<string> welcomedMemberIds = new List<string>();
-		public event EventHandler<OnChatCommandReceivedArgs> BoopEvent;
+		private readonly HubConnection _connection;
+		//public event EventHandler<OnChatCommandReceivedArgs> BoopEvent;
 
 		public TwitchClientService(
 			IOptions<TwitchConfiguration> settings,
 			TwitchApiService apiService,
-			TrelloService trelloService)
+			TrelloService trelloService,
+			HubConnection connection)
 		{
 			_settings = settings.Value;
 			_apiService = apiService;
 			_trelloService = trelloService;
-			
-		
-
-
-
+			_connection = connection;
 			ConnectionCredentials credentials = new ConnectionCredentials(_settings.BotName, _settings.AuthToken);
 			var clientOptions = new ClientOptions
 			{
@@ -147,8 +149,10 @@ namespace LaylasLittleCompanion.Server.Services
 					CreateTrelloCard(e.Command, "links");
 					break;
 				case "puprain":
+					await MakeItRain(MessageTypeEnum.Rain);
+					break;
 				case "waffle":
-					BoopEvent?.Invoke(this, e);
+					await MakeItRain(MessageTypeEnum.Waffle);
 					break;
 				case "swag":
 					await PlayBalls(e.Command);
@@ -163,10 +167,10 @@ namespace LaylasLittleCompanion.Server.Services
 			}
 
 		}
-		private async Task MakeItRain(ChatCommand e)
+		private async Task MakeItRain(MessageTypeEnum messageType)
 		{
 			//await _hub.Clients.All.SendAsync("LaylaMessage", e.ChatMessage.DisplayName, "Make it rain!!!", MessageTypeEnum.Rain);
-			//await _connection.InvokeAsync("SendMessage", e.ChatMessage.DisplayName, "Make it rain!!!", MessageTypeEnum.Rain);
+			await _connection.InvokeAsync("SendMessage", messageType);
 			//await _hub.Clients.All.SendAsync("LaylaMessage", user, message, action);
 		}
 		private async Task Waffling(ChatCommand e)

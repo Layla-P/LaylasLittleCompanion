@@ -34,12 +34,11 @@ namespace LaylasLittleCompanion.Server.Extensions
 				string[] scopes = configuration.GetSection("TwitchConfiguration:Scopes").Get<string[]>();
 
 				options.Scope.Clear();
-
 				foreach (var scope in scopes)
 				{
 					options.Scope.Add(scope);
 				}
-
+				
 				options.TokenValidationParameters.NameClaimType = "preferred_username";
 			});
 

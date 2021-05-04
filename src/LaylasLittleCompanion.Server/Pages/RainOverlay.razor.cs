@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using LaylasLittleCompanion.Server.Hubs;
 using LaylasLittleCompanion.Server.Models;
 using LaylasLittleCompanion.Server.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
 using TwitchLib.Client.Events;
 
@@ -14,13 +16,14 @@ namespace LaylasLittleCompanion.Server.Pages
 		const string MatterJsPath = "./js/matter.js";
 		[Inject] IJSRuntime JsRuntime { get; set; }
 		[Inject] TwitchClientService twitchClient { get; set; }
+		[Inject] HubConnection hubConnection { get; set; }
 
 		IJSObjectReference matter;
 		IJSObjectReference boops;
 
 
 		public ElementReference Boops { get; set; }
-
+		
 		protected override async Task OnAfterRenderAsync(bool firstRender)
 		{
 
@@ -28,7 +31,12 @@ namespace LaylasLittleCompanion.Server.Pages
 			{
 				matter = await JsRuntime.InvokeAsync<IJSObjectReference>("import", MatterJsPath);
 				boops = await JsRuntime.InvokeAsync<IJSObjectReference>("import", JsModulePath);
-				twitchClient.BoopEvent += DoStuff;
+
+				hubConnection.On<string>("ReceiveMessage", (action) =>
+				{
+					boops.InvokeVoidAsync("Booper", action);
+					InvokeAsync(StateHasChanged);
+				});
 			}
 		}
 
@@ -39,7 +47,7 @@ namespace LaylasLittleCompanion.Server.Pages
 
 		public async ValueTask DisposeAsync()
 		{
-			twitchClient.BoopEvent -= DoStuff;
+			//twitchClient.BoopEvent -= DoStuff;
 			await matter.InvokeVoidAsync("dispose");
 			await matter.DisposeAsync();
 			await boops.InvokeVoidAsync("dispose");
