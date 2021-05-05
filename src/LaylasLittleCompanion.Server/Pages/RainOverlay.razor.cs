@@ -14,12 +14,14 @@ namespace LaylasLittleCompanion.Server.Pages
 	{
 		const string JsModulePath = "./js/boops.js";
 		const string MatterJsPath = "./js/matter.js";
+		const string StylePath = "./js/style-control.js";
 		[Inject] IJSRuntime JsRuntime { get; set; }
 		[Inject] TwitchClientService twitchClient { get; set; }
 		[Inject] HubConnection hubConnection { get; set; }
 
 		IJSObjectReference matter;
 		IJSObjectReference boops;
+		IJSObjectReference style;
 
 
 		public ElementReference Boops { get; set; }
@@ -31,6 +33,8 @@ namespace LaylasLittleCompanion.Server.Pages
 			{
 				matter = await JsRuntime.InvokeAsync<IJSObjectReference>("import", MatterJsPath);
 				boops = await JsRuntime.InvokeAsync<IJSObjectReference>("import", JsModulePath);
+				style = await JsRuntime.InvokeAsync<IJSObjectReference>("import", StylePath);
+				style.InvokeVoidAsync("updateBody");
 
 				hubConnection.On<string>("ReceiveMessage", (action) =>
 				{

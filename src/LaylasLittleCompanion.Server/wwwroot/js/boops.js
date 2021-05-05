@@ -1,3 +1,4 @@
+'use-strict'
 const world = document.querySelector(".boops");
 const { Engine, Render, Runner, World, Bodies } = Matter;
 
