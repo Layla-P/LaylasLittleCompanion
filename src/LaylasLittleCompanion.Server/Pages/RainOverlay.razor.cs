@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LaylasLittleCompanion.Server.Hubs;
 using LaylasLittleCompanion.Server.Models;
@@ -16,42 +17,42 @@ namespace LaylasLittleCompanion.Server.Pages
 		const string MatterJsPath = "./js/matter.js";
 		const string StylePath = "./js/style-control.js";
 		[Inject] IJSRuntime JsRuntime { get; set; }
-		[Inject] TwitchClientService twitchClient { get; set; }
 		[Inject] HubConnection hubConnection { get; set; }
 
 		IJSObjectReference matter;
 		IJSObjectReference boops;
 		IJSObjectReference style;
+		public ElementReference CanvasElement;
 
 
-		public ElementReference Boops { get; set; }
-		
-		protected override async Task OnAfterRenderAsync(bool firstRender)
+		protected override async Task OnInitializedAsync()
+		{
+			matter = await JsRuntime.InvokeAsync<IJSObjectReference>("import", MatterJsPath);
+			boops = await JsRuntime.InvokeAsync<IJSObjectReference>("import", JsModulePath);
+			style = await JsRuntime.InvokeAsync<IJSObjectReference>("import", StylePath);
+			await style.InvokeVoidAsync("updateBody");
+
+			await boops.InvokeVoidAsync("Init", CanvasElement);
+		}
+
+		protected override void OnParametersSet()
 		{
 
-			if (firstRender)
-			{
-				matter = await JsRuntime.InvokeAsync<IJSObjectReference>("import", MatterJsPath);
-				boops = await JsRuntime.InvokeAsync<IJSObjectReference>("import", JsModulePath);
-				style = await JsRuntime.InvokeAsync<IJSObjectReference>("import", StylePath);
-				_ = style.InvokeVoidAsync("updateBody");
-
-				hubConnection.On<string>("ReceiveMessage", (action) =>
+			hubConnection.On<string>("ReceiveMessage", async (action) =>
 				{
-					boops.InvokeVoidAsync("Booper", action);
-					InvokeAsync(StateHasChanged);
+					await boops.InvokeVoidAsync("Booper", action);
+					await InvokeAsync(StateHasChanged);
+
 				});
-			}
 		}
 
-		async void DoStuff(object sender, OnChatCommandReceivedArgs e)
-		{
-			await boops.InvokeVoidAsync("Booper", e.Command.CommandText );
-		}
+
+		public bool IsConnected =>
+			hubConnection.State == HubConnectionState.Connected;
 
 		public async ValueTask DisposeAsync()
 		{
-			//twitchClient.BoopEvent -= DoStuff;
+			//await hubConnection.DisposeAsync();
 			await matter.InvokeVoidAsync("dispose");
 			await matter.DisposeAsync();
 			await boops.InvokeVoidAsync("dispose");

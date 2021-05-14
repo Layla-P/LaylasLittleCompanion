@@ -26,6 +26,7 @@ namespace LaylasLittleCompanion.Server.Services
 		private readonly TwitchConfiguration _settings;
 		private readonly TrelloService _trelloService;
 		private readonly TwitchApiService _apiService;
+		private readonly TwitchCommands _commands;
 		private List<User> liveCodersTeamMembers;
 		private List<string> welcomedMemberIds = new List<string>();
 		private readonly HubConnection _connection;
@@ -35,12 +36,14 @@ namespace LaylasLittleCompanion.Server.Services
 			IOptions<TwitchConfiguration> settings,
 			TwitchApiService apiService,
 			TrelloService trelloService,
-			HubConnection connection)
+			HubConnection connection,
+			TwitchCommands commands)
 		{
 			_settings = settings.Value;
 			_apiService = apiService;
 			_trelloService = trelloService;
 			_connection = connection;
+			_commands = commands;
 			ConnectionCredentials credentials = new ConnectionCredentials(_settings.BotName, _settings.AuthToken);
 			var clientOptions = new ClientOptions
 			{
@@ -128,62 +131,11 @@ namespace LaylasLittleCompanion.Server.Services
 		//}
 		private async void Client_OnCommandReceived(object sender, OnChatCommandReceivedArgs e)
 		{
-
-			switch (e.Command.CommandText.ToLower())
-			{
-
-				case "trello":
-					_client.SendMessage(_settings.Channel,
-						 "Try typing !todo/!general/!bot/!links \"title of card\" \"The description of the card or URL\"");
-					break;
-				case "todo":
-					CreateTrelloCard(e.Command, "todo");
-					break;
-				case "general":
-					CreateTrelloCard(e.Command, "General Ideas");
-					break;
-				case "bot":
-					CreateTrelloCard(e.Command, "Bot Ideas");
-					break;
-				case "links":
-					CreateTrelloCard(e.Command, "links");
-					break;
-				case "puprain":
-					await MakeItRain(MessageTypeEnum.Rain);
-					break;
-				case "waffle":
-					await MakeItRain(MessageTypeEnum.Waffle);
-					break;
-				case "swag":
-					await PlayBalls(e.Command);
-					break;
-				case "stats":
-					await GetStats(e.Command);
-					break;
-				default:
-					break;
-
-
-			}
-
+			var response = await _commands.Received(e);
+			_client.SendMessage(_settings.Channel, response);
+			
 		}
-		private async Task MakeItRain(MessageTypeEnum messageType)
-		{
-			//await _hub.Clients.All.SendAsync("LaylaMessage", e.ChatMessage.DisplayName, "Make it rain!!!", MessageTypeEnum.Rain);
-			await _connection.InvokeAsync("SendMessage", messageType);
-			//await _hub.Clients.All.SendAsync("LaylaMessage", user, message, action);
-		}
-		private async Task Waffling(ChatCommand e)
-		{
-			//await _hub.Clients.All.SendAsync("SendMessage", e.ChatMessage.DisplayName, "Make it rain!!!", MessageTypeEnum.Waffle);
-			_client.SendMessage(e.ChatMessage.Channel, "Layla is waffling!!");
-		}
-		
-		private async Task GetStats(ChatCommand e)
-		{
-			var currentStats = await _apiService.GetStatsAsync();
-			_client.SendMessage(e.ChatMessage.Channel, currentStats);
-		}
+
 		private async void Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
 		{
 			int.TryParse(e.RaidNotification.MsgParamViewerCount, out var count);
@@ -220,66 +172,6 @@ namespace LaylasLittleCompanion.Server.Services
 				Console.WriteLine($"Gifted sub action failed: {ex.Message}");
 			}
 		}
-
-		private async Task Test(ChatCommand e)
-		{
-			//await _hub.Clients.All.SendAsync("SendMessage", "TEST", "TEST", MessageTypeEnum.Cannon);
-		}
-		private void CreateTrelloCard(ChatCommand e, string listName)
-		{
-			try
-			{
-				if (e.ChatMessage.IsModerator
-					   || e.ChatMessage.IsBroadcaster
-					   || e.ChatMessage.IsSubscriber
-					   || e.ChatMessage.IsVip)
-				{
-					var messageArray = CardMessageHandler(e.ArgumentsAsString);
-					if (messageArray.Length == 2)
-					{
-
-						var testCard = new NewTrelloCard
-						{
-							UserName = e.ChatMessage.DisplayName,
-							CardName = messageArray[0],
-							Description = messageArray[1],
-							ListName = listName
-						};
-						var trelloResponse = _trelloService.AddNewCardAsync(testCard);
-						_client.SendMessage(_settings.Channel, trelloResponse);
-					}
-					else
-					{
-						_client.SendMessage(_settings.Channel, "Hmmm, there was an error parsing your Trello card, please type !trello to see how to format a card command.");
-					}
-				}
-				else
-				{
-					_client.SendMessage(_settings.Channel,
-					 "Adding a Trello card is only available to subscribers and VIPs, but thanks for getting involved!");
-				}
-
-			}
-			catch (Exception ex)
-			{
-				_client.SendMessage(_settings.Channel,
-				   $"{e.ChatMessage.DisplayName} That card wasn't created, sorry!!");
-				Console.WriteLine($"Failed to write Trello card: {ex.Message}");
-			}
-		}
-		private static string GetEnumDescription(Enum value)
-		{
-			FieldInfo fi = value.GetType().GetField(value.ToString()); DescriptionAttribute[] attributes = fi.GetCustomAttributes(typeof(DescriptionAttribute), false) as DescriptionAttribute[]; if (attributes != null && attributes.Any())
-			{
-				return attributes.First().Description;
-			}
-			return value.ToString();
-		}
-		private string[] CardMessageHandler(string message)
-		{
-			return message.TrimStart('"').TrimEnd('"').Split("\" \"");
-		}
-
 		
 	}
 }

@@ -41,6 +41,7 @@ namespace LaylasLittleCompanion.Server
 				.WithAutomaticReconnect()
 				.Build();
 			rainHubConnection.StartAsync();
+
 			services.AddSingleton(rainHubConnection);
 			// tresting twitch integration https://github.com/FiniteSingularity/tau
 			services.Configure<TwitchConfiguration>(Configuration.GetSection("TwitchConfiguration"));
@@ -73,9 +74,9 @@ namespace LaylasLittleCompanion.Server
 			services.AddTrelloService(Configuration);
 
 			services.AddSingleton<TwitchApiService>();
-
+			services.AddSingleton<TwitchCommands>();
 			services.AddSingleton<TwitchClientService>();
-
+			
 
 			//var serviceProvider = services.BuildServiceProvider();
 			//_ = serviceProvider.GetService<TwitchClientService>();

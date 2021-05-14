@@ -33,7 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Enums\" />
 	<Folder Include="wwwroot\images\" />
   </ItemGroup>
 

@@ -9,7 +9,7 @@ namespace LaylasLittleCompanion.Server.Hubs
 {
 	public class RainHub : Hub
 	{
-		public async Task SendMessage( MessageTypeEnum messageType)
+		public async Task SendMessage(MessageTypeEnum messageType)
 		{
 			string action = null;
 			switch (messageType)
@@ -30,5 +30,9 @@ namespace LaylasLittleCompanion.Server.Hubs
 			}
 			await Clients.All.SendAsync("ReceiveMessage", action);
 		}
+		//public async Task SendMessage(string user, string message)
+		//{
+		//	await Clients.All.SendAsync("ReceiveMessage", user, message);
+		//}
 	}
 }

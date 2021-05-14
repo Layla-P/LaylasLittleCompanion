@@ -4,20 +4,20 @@
 @inject TwitchClientService twitchClient
 @inject HubConnection hubConnection
 
-<button  @ref="ChatElement" class="btn btn-@ButtonClass" @onclick="Send" >@ButtonText</button>
+<button @ref="ChatElement" class="btn btn-@ButtonClass" @onclick="Send">@ButtonText</button>
 
 @code{
-	ElementReference ChatElement { get; set; }
-	[ParameterAttribute] public string ButtonText { get; set; }
-	[ParameterAttribute] public string ButtonClass { get; set; }
-	[ParameterAttribute] public string ButtonIcon { get; set; }
-	[ParameterAttribute] public MessageTypeEnum ButtonAction { get; set; }
+    ElementReference ChatElement { get; set; }
+    [ParameterAttribute] public string ButtonText { get; set; }
+    [ParameterAttribute] public string ButtonClass { get; set; }
+    [ParameterAttribute] public string ButtonIcon { get; set; }
+    [ParameterAttribute] public MessageTypeEnum ButtonAction { get; set; }
 
-	protected async override Task OnInitializedAsync()
-	{
-	
-	}
+    protected async override Task OnInitializedAsync()
+    {
+       
+    }
 
-	 async Task Send() =>
-        await hubConnection.SendAsync("SendMessage", ButtonAction);
+    async Task Send() =>
+       await hubConnection.SendAsync("SendMessage", ButtonAction);
 }
