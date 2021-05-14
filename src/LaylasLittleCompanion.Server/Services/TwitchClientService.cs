@@ -178,17 +178,7 @@ namespace LaylasLittleCompanion.Server.Services
 			//await _hub.Clients.All.SendAsync("SendMessage", e.ChatMessage.DisplayName, "Make it rain!!!", MessageTypeEnum.Waffle);
 			_client.SendMessage(e.ChatMessage.Channel, "Layla is waffling!!");
 		}
-		private async Task PlayBalls(ChatCommand e)
-		{
-
-			if (e.ChatMessage.IsModerator || e.ChatMessage.IsBroadcaster)
-			{
-				// _client.SendMessage(e.ChatMessage.Channel, "Time to get your balls in! Type !prizedraw in the chat to be in with a chance to win!");
-				_client.SendMessage(e.ChatMessage.Channel, "Type !winbooty to be in for a chance of winning some booty!");
-
-				//await _hub.Clients.All.SendAsync("PlaySoundMessage", e.ChatMessage.DisplayName, "balls");
-			}
-		}
+		
 		private async Task GetStats(ChatCommand e)
 		{
 			var currentStats = await _apiService.GetStatsAsync();

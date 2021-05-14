@@ -34,7 +34,7 @@ namespace LaylasLittleCompanion.Server.Pages
 				matter = await JsRuntime.InvokeAsync<IJSObjectReference>("import", MatterJsPath);
 				boops = await JsRuntime.InvokeAsync<IJSObjectReference>("import", JsModulePath);
 				style = await JsRuntime.InvokeAsync<IJSObjectReference>("import", StylePath);
-				style.InvokeVoidAsync("updateBody");
+				_ = style.InvokeVoidAsync("updateBody");
 
 				hubConnection.On<string>("ReceiveMessage", (action) =>
 				{
@@ -56,6 +56,8 @@ namespace LaylasLittleCompanion.Server.Pages
 			await matter.DisposeAsync();
 			await boops.InvokeVoidAsync("dispose");
 			await boops.DisposeAsync();
+			await style.InvokeVoidAsync("dispose");
+			await style.DisposeAsync();
 		}
 	}
 }
